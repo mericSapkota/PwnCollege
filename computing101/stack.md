@@ -444,14 +444,3 @@ rdi = exit code
 
 ---
 
-## 12) One-line summary
-
-The stack is a LIFO memory structure, `rsp` points to its top, `pop rdi` reads `argc` from the top of the startup stack, and the program exits using that value as its return code.
-
-```
-
-If you want, I can also make this into a **1-page cheat sheet** or **lecture-slide style notes**.
-```
-
-- 
--
