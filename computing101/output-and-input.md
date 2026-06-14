@@ -94,6 +94,9 @@ So the CPU kept running garbage/unintended memory as instructions, which caused 
  syscall
 
  ```
+for read 
+`read(0, some_address, 5);`
+args: rdi, rsi, rdx
 
 .intel_syntax noprefix
 .global \_start
@@ -162,7 +165,7 @@ _start:
 - **Dynamic Write Size:** Copying `rax` (the number of bytes successfully read) into `rdx` before running `sys_write` ensures your program only prints the exact size of the file, cleanly avoiding terminal garbage values.
 
 
-## 💻 Code with Line-by-Line Comments
+##  Code with Line-by-Line Comments
 
 Code snippet
 
