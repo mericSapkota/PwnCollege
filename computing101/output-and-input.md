@@ -98,6 +98,7 @@ for read
 `read(0, some_address, 5);`
 args: rdi, rsi, rdx
 
+```as
 .intel_syntax noprefix
 .global \_start
 \_start:
@@ -119,7 +120,8 @@ args: rdi, rsi, rdx
     mov rax, 60     # sys_exit ID
     mov rdi, 42     # exit code status
     syscall
-
+```
+```as
 .intel_syntax noprefix
 .global _start
 _start:
@@ -141,6 +143,7 @@ _start:
     mov rdi, 42
     mov rax, 60
     syscall
+```
 
 ### 1. Characters and Strings in Memory
 
