@@ -223,3 +223,59 @@ _start:
     mov rax, 60                 # Syscall ID 60: sys_exit
     syscall                     # Terminate program execution
 ```
+
+###  What does LEA actually do?
+LEA stands for Load Effective Address. * Unlike MOV, which copies the data stored inside a memory location, LEA calculates the mathematical address of that location and saves the address itself into the register.
+
+Analogy: If MOV goes to an address and brings back the box inside the house, LEA just writes down the GPS coordinates of the house on a piece of paper.
+
+### RIP-Relative Addressing (Position-Independent Code)
+RIP is the Instruction Pointer. It is a special register that always holds the memory address of the next instruction the CPU is about to execute.
+
+Why use [rip + path]? In modern 64-bit Linux, security features like ASLR (Address Space Layout Randomization) scramble where your program is loaded into RAM every single time it runs. This means you cannot hardcode absolute memory addresses (like 0x400080) because that address changes on every execution.
+
+The Solution: Even though the absolute address changes, the relative distance (offset) between the executing code (rip) and your data (path) stays exactly the same. [rip + path] tells the CPU: "Find where we are currently executing in memory, add the fixed distance to the label 'path', and compute that exact location."
+
+### Why is this preferred over building strings byte-by-byte?
+In  previous challenge,  had to manually move characters into the stack one-by-one:
+
+Code snippet
+```
+mov BYTE PTR [rsp], '/'
+mov BYTE PTR [rsp+1], 'f' ...
+With LEA and a .string data section, you can let the assembler handle the string creation and null-termination automatically, and then point to it cleanly in one line.
+```
+### Code Example & Anatomy
+
+
+Code snippet
+```as
+.intel_syntax noprefix
+.global _start
+
+.section .text
+_start:
+    # -------------------------------------------------------------------------
+    # 1. LOAD THE ADDRESS OF THE STRING
+    # -------------------------------------------------------------------------
+    # This calculates the exact RAM address of 'path' relative to the current RIP
+    # and places that address directly into RDI.
+    lea rdi, [rip + path]   
+
+    # 2. OPEN THE FILE
+    mov rax, 2              # sys_open ID
+    mov rsi, 0              # O_RDONLY
+    syscall                 # The kernel reads the path string from the address in RDI
+
+    # (Insert read/write/exit code here...)
+    mov rdi, 42
+    mov rax, 60
+    syscall
+
+# -----------------------------------------------------------------------------
+# DATA SECTION
+# -----------------------------------------------------------------------------
+.section .data
+path:
+    .string "/flag"         # The '.string' directive automatically appends the 0 (null terminator)
+```
